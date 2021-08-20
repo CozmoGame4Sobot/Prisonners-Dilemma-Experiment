@@ -12,7 +12,7 @@ Pillow==6.1.0
 cozmoclad==1.5.0
 cozmo==0.14.0
 
-The cozmo sdk(s) are a match for version Cozmo app version 1.5 . They need to be installed in order provided so that a newer version of the packages don't get pulled in. To install Cozmo app see [here](https://github.com/cozmo4hri/Device_Setup)
+The cozmo sdk(s) are a match for version Cozmo app version 3.4 . They need to be installed in order provided so that a newer version of the packages don't get pulled in. To install Cozmo app see [here](https://github.com/cozmo4hri/Device_Setup)
 
 To setup your device and computer to run custom python code, see instruction from Anki here: http://cozmosdk.anki.com/docs/initial.html
 
