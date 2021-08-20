@@ -32,8 +32,8 @@ These need to be set to the tablet being used for the experiment
 So that we are not switching during the experiment
 """
 BLUE_CODE = "HGADYZJF"
-#RED_CODE = "HGCD360N" #"CICQZHMRLVRCD6OZ"
-RED_CODE = "CICQZHMRLVRCD6OZ"
+RED_CODE = "HGCD360N" #"CICQZHMRLVRCD6OZ"
+
 
 #Score conditions
 P_R = 0   # player and cozmo grab
