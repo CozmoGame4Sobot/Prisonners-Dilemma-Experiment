@@ -71,10 +71,10 @@ class CozmoPlayerActions(object):
         self.practice = False
         if self.strategy == PRACTICE:
             self.practice = True
-            self.rounds_to_play = 10
+            self.rounds_to_play = 11
             self.emotion = NEUTRAL
         else:
-            self.rounds_to_play = 10
+            self.rounds_to_play = 11
             
         if emotion == 'S':
             self.emotion = SAD
