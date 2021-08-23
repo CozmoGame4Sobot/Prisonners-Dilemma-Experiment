@@ -162,7 +162,7 @@ class CozmoPlayerActions(object):
             cozmo.logger.info("PD : Cozmo sad lose game reacion")            
         elif self.emotion == ANGRY:
             #lose_game_anim = "anim_guarddog_getout_busted_01" #Te-Yi's first choice
-            reaction_anim = "anim_memorymatch_failgame_cozmo_02"
+            reaction_anim = "anim_guarddog_getout_busted_01" #"anim_memorymatch_failgame_cozmo_02"
             cozmo.logger.info("PD : Cozmo angry lose game reacion") 
         else:
             reaction_anim = "anim_speedtap_foundblock_01"
@@ -177,7 +177,7 @@ class CozmoPlayerActions(object):
             cozmo.logger.info("PD : Cozmo sad lose game reacion")            
         elif self.emotion == ANGRY:
             #lose_game_anim = "anim_guarddog_getout_busted_01" #Te-Yi's first choice
-            reaction_anim = "anim_memorymatch_failgame_cozmo_02"
+            reaction_anim = "anim_guarddog_getout_busted_01" #"anim_memorymatch_failgame_cozmo_02"
             cozmo.logger.info("PD : Cozmo angry lose game reacion") 
         else:
             reaction_anim = "anim_speedtap_foundblock_01"
@@ -192,7 +192,8 @@ class CozmoPlayerActions(object):
             selected_anim = self.select_lose_hand()
         elif act_type == "win_hand":
             # TO DO : This needs to be as per Te-Yi's speck (ask her)
-            selected_anim = "anim_speedtap_winhand_0%s" % randint(1, 3)
+            #selected_anim = "anim_speedtap_winhand_0%s" % randint(1, 3)
+            selected_anim = "anim_keepaway_wingame_02"	#happy animation
         elif act_type == "neutral":
             selected_anim = "anim_speedtap_foundblock_01"
         elif act_type == "stand_back":
@@ -210,7 +211,8 @@ class CozmoPlayerActions(object):
             game_robot.drive_wheels(-100, 100, duration=1)
             game_robot.set_head_angle(degrees(0)).wait_for_completed()
             time.sleep(0.5)
-            
+        #elif act_type == "happy":
+        #    selected_anim = "anim_keepaway_wingame_02"	
         elif act_type == "win_game":
             selected_anim = self.select_win_game()
         elif act_type == "lose_game":
@@ -235,7 +237,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
     display_screen.setup(robot_game_action.score_plan,
                          singleScreen=robot_game_action.singleScreen)
     game_screen = display_screen.gameScreen
-    #display_screen.start()
+    display_screen.start()
     display_screen.root.mainloop(1)
     game_screen.show_play_screen(0, 0)
     
@@ -338,7 +340,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             monitor_player_tap.listen = False
             speed_tap_game.deactivate_current_deal() 
             cozmo.logger.info("PD : Hand deactivated : %s" % deal_count)
-            speed_tap_game.score_last_deal(refresh = True)  # For not having a running total set refresh to True   
+            speed_tap_game.score_last_deal(refresh = False)  # For not having a running total set refresh to True   
             result = speed_tap_game.result_track[-1]
             cozmo.logger.info("PD : Result : %s" % RESULT_STATEMENT[result])
             game_screen.show_play_screen(speed_tap_game.player_score,
@@ -384,6 +386,10 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             # speed_tap_game.player_score, speed_tap_game.robot_score,
             if not robot_game_action.practice and speed_tap_game.robot_score < speed_tap_game.player_score:
                 robot_game_action.act_out(robot, "lose_hand")
+              
+            # condition to win_hand still to be checked with Te-Yi/Bish
+            #if not robot_game_action.practice and speed_tap_game.robot_score == speed_tap_game.player_score:
+            #    robot_game_action.act_out(robot, "win_hand")
             
             # Stop light cubes
             robot_cube.stop_light_chaser()
