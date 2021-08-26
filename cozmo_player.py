@@ -115,10 +115,11 @@ class CozmoPlayerActions(object):
         """
         print("Goal %d  to grab:%s" %(goal, [P_R, O_R]))
         if self.strategy == PRACTICE:
-            tap_decision = goal in [P_R, O_R ] #randint(0, 10) in [0, 4, 8, 5, 10]
-            
+            tap_decision = goal in [P_R, O_R ] #randint(0, 10) in [0, 4, 8, 5, 10]           
         elif self.strategy == RANDOM:
             tap_decision = goal in [P_R, O_R]
+        elif self.strategy == TIT_FOR_TAT:
+            tap_decision = goal in [COZMO_COOP] #randint(0, 10) in [0, 4, 8, 5, 10]   
         else:
             tap_decision = goal in [COZMO_DEFECT]
         time.sleep(1.5)
@@ -211,8 +212,6 @@ class CozmoPlayerActions(object):
             game_robot.drive_wheels(-100, 100, duration=1)
             game_robot.set_head_angle(degrees(0)).wait_for_completed()
             time.sleep(0.5)
-        #elif act_type == "happy":
-        #    selected_anim = "anim_keepaway_wingame_02"	
         elif act_type == "win_game":
             selected_anim = self.select_win_game()
         elif act_type == "lose_game":
@@ -237,14 +236,19 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
     display_screen.setup(robot_game_action.score_plan,
                          singleScreen=robot_game_action.singleScreen)
     game_screen = display_screen.gameScreen
-    display_screen.start()
+    #display_screen.start()
     display_screen.root.mainloop(1)
     game_screen.show_play_screen(0, 0)
     
     # Setup the game so cozmo and player knows their cube
     
     time.sleep(0.25)        # sleep to give the cozmo cube to stop flashing
+    
     robot_cube, player_coop_cube, player_defect_cube = speed_tap_game.cozmo_setup_game(robot_game_action.score_plan)
+        # do something with item
+    #except Exception as e:
+        # handle the exception accordingly
+    
     
     if robot_cube in [player_coop_cube, player_defect_cube]:
         print("Participant cannot play on the same cube as cozmo")
@@ -388,8 +392,8 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                 robot_game_action.act_out(robot, "lose_hand")
               
             # condition to win_hand still to be checked with Te-Yi/Bish
-            #if not robot_game_action.practice and speed_tap_game.robot_score == speed_tap_game.player_score:
-            #    robot_game_action.act_out(robot, "win_hand")
+            if not robot_game_action.practice and speed_tap_game.robot_score > speed_tap_game.player_score:
+                robot_game_action.act_out(robot, "win_hand")
             
             # Stop light cubes
             robot_cube.stop_light_chaser()

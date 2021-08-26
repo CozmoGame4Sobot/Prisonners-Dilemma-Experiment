@@ -65,7 +65,7 @@ class SpeedTapEngine:
         
         
         
-    def cozmo_setup_game(self, score_plan):
+    def cozmo_setup_game(self, score_plan=None):
         light_cube_list = [cozmo.objects.LightCube1Id, cozmo.objects.LightCube2Id ,cozmo.objects.LightCube3Id ]
         self.score_plan = score_plan
         

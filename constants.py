@@ -32,7 +32,7 @@ These need to be set to the tablet being used for the experiment
 So that we are not switching during the experiment
 """
 BLUE_CODE = "HGADYZJF"
-RED_CODE = "HGCD360N" #"CICQZHMRLVRCD6OZ"
+RED_CODE = "CICQZHMRLVRCD6OZ" #"CICQZHMRLVRCD6OZ"
 
 
 #Score conditions
