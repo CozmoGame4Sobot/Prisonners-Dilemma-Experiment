@@ -137,7 +137,9 @@ class SpeedTapEngine:
                 other_cube.stop_light_chaser()
                 other_cube.set_lights_off()
         
-        
+        print(self.robot_cube)
+        print(self.player_coop_cube)
+        print(self.player_defect_cube) 
         return self.robot_cube, self.player_coop_cube, self.player_defect_cube
     
     def deal_hand(self):

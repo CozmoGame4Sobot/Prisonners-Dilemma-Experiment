@@ -74,7 +74,7 @@ class CozmoPlayerActions(object):
             self.rounds_to_play = 11
             self.emotion = NEUTRAL
         else:
-            self.rounds_to_play = 11
+            self.rounds_to_play = 10
             
         if emotion == 'S':
             self.emotion = SAD
@@ -116,10 +116,10 @@ class CozmoPlayerActions(object):
         print("Goal %d  to grab:%s" %(goal, [P_R, O_R]))
         if self.strategy == PRACTICE:
             tap_decision = goal in [P_R, O_R ] #randint(0, 10) in [0, 4, 8, 5, 10]           
-        elif self.strategy == RANDOM:
-            tap_decision = goal in [P_R, O_R]
-        elif self.strategy == TIT_FOR_TAT:
-            tap_decision = goal in [COZMO_COOP] #randint(0, 10) in [0, 4, 8, 5, 10]   
+        #elif self.strategy == RANDOM:
+        #    tap_decision = goal in [P_R, O_R]
+        #elif self.strategy == TIT_FOR_TAT:
+        #    tap_decision = goal in [1, 1, 1, 0, 0, 1]   
         else:
             tap_decision = goal in [COZMO_DEFECT]
         time.sleep(1.5)
@@ -128,12 +128,14 @@ class CozmoPlayerActions(object):
         game_robot.move_lift(4)
         time.sleep(.1)
         game_robot.play_anim('anim_speedtap_tap_02')#.wait_for_completed()
+        
         if tap_decision:
             cozmo.logger.info("PD : Cozmo tapped grab")
             cozmo_tapped = speed_tap_game.register_tap(tap_type=COZMO_DEFECT)
         else:
             cozmo.logger.info("PD : Cozmo tapped share")
             cozmo_tapped = speed_tap_game.register_tap(tap_type=COZMO_COOP)
+        
         time.sleep(0.5)
         return True
     
@@ -245,10 +247,16 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
     time.sleep(0.25)        # sleep to give the cozmo cube to stop flashing
     
     robot_cube, player_coop_cube, player_defect_cube = speed_tap_game.cozmo_setup_game(robot_game_action.score_plan)
+    #robot_cube, player_coop_cube, player_defect_cube = speed_tap_game.cozmo_setup_game([(4, 4), (10, 0), (0, 10), (6,6)])
+    #print(speed_tap_game.cozmo_setup_game(robot_game_action.score_plan))
+    
         # do something with item
     #except Exception as e:
         # handle the exception accordingly
     
+    #robot_cube =  speed_tap_game.robot_cube
+    #player_coop_cube = speed_tap_game.player_coop_cube
+    #player_defect_cube = speed_tap_game.player_defect_cube
     
     if robot_cube in [player_coop_cube, player_defect_cube]:
         print("Participant cannot play on the same cube as cozmo")
@@ -277,7 +285,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
     # This is needed for RANDOM choices
     cozmo_fixture =  COZMO_CHOICE[randint(0, 2)][:robot_game_action.rounds_to_play]
     # Now all decided so lets suffle it up
-    shuffle(cozmo_fixture)
+    #shuffle(cozmo_fixture)
     
     # Start the game and player tap listeners
     monitor_player_tap.game_on = True
@@ -300,7 +308,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
         
     try:
         while deal_count < robot_game_action.rounds_to_play :
-            #print("%s" % cozmo_fixture)
+            print("cozmo_fixture %s" % cozmo_fixture)
             cozmo.logger.info("PD : Deal started")
             if robot_game_action.practice:
                 if track_correct_practice%4 == 0:
@@ -330,6 +338,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             elif robot_game_action.strategy == TIT_FOR_TAT and speed_tap_game.robot_next_move:
                 # If player defected last time cozmo will defect
                 print("%d  defect=%d" % (speed_tap_game.robot_next_move, COZMO_DEFECT))
+                #cozmo_goal = speed_tap_game.robot_next_move
                 cozmo_goal = speed_tap_game.robot_next_move
             else:
                 cozmo_goal = cozmo_fixture[deal_count - 1]
@@ -365,8 +374,6 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                 if result==correctChoice:
                     track_correct_practice += 1
                     cozmo.logger.info("PD : CORRECT for %s times" % track_correct_practice)
-                    
-                    
                 else:
                     cozmo.logger.info("PD : INCORRECT choice. Chances left: %s " % (robot_game_action.rounds_to_play - deal_count -1))
                     
