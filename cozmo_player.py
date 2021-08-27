@@ -79,7 +79,7 @@ class CozmoPlayerActions(object):
             self.rounds_to_play = 11
             self.emotion = NEUTRAL 
         elif self.strategy == TIT_FOR_TAT: #we only have emotions for Tit-for-tat
-            self.rounds_to_play = 16
+            self.rounds_to_play = 15
             if emotion == 'S':
                 self.emotion = SAD
             elif emotion == 'A':
@@ -372,9 +372,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             speed_tap_game.score_last_deal(refresh = False)  # For not having a running total set refresh to True   
             result = speed_tap_game.result_track[-1]
             cozmo.logger.info("PD : Result : %s" % RESULT_STATEMENT[result])
-            game_screen.show_play_screen(speed_tap_game.player_score,
-                                         speed_tap_game.robot_score,
-                                         result)
+            game_screen.show_play_screen(speed_tap_game.player_score,  speed_tap_game.robot_score, result)
             
             cozmo.logger.info("PD : After hand %s player score : %s" % (deal_count, speed_tap_game.player_score))
             cozmo.logger.info("PD : After hand %s cozmo score  : %s" % (deal_count, speed_tap_game.robot_score))
@@ -391,12 +389,9 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                     track_correct_practice += 1
                     cozmo.logger.info("PD : CORRECT for %s times" % track_correct_practice)
                 else:
-                    cozmo.logger.info("PD : INCORRECT choice. Chances left: %s " % (robot_game_action.rounds_to_play - deal_count -1))
-                    
+                    cozmo.logger.info("PD : INCORRECT choice. Chances left: %s " % (robot_game_action.rounds_to_play - deal_count -1))                    
                     # One wrong implies all wrong
-                    track_correct_practice = 0
-                    
-                
+                    track_correct_practice = 0                                   
                 # We are not tracking scores across games for 
                 # practice so reset deal                
                 speed_tap_game.reset_deals()
@@ -411,12 +406,17 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             
             # This is where the robot needs to act angry or sad or neutral depending on relative scores
             # speed_tap_game.player_score, speed_tap_game.robot_score,
-            if robot_game_action.strategy == TIT_FOR_TAT and speed_tap_game.robot_score < speed_tap_game.player_score:
-                robot_game_action.act_out(robot, "lose_hand")
-              
+            #if robot_game_action.strategy == TIT_FOR_TAT and speed_tap_game.robot_score < speed_tap_game.player_score:
+            #    robot_game_action.act_out(robot, "lose_hand")
+            
+            # This is where the robot needs to act angry or sad or neutral depending on result
             # condition to win_hand still to be checked with Te-Yi/Bish
-            if robot_game_action.strategy == TIT_FOR_TAT and speed_tap_game.robot_score > speed_tap_game.player_score:
+            if robot_game_action.strategy == TIT_FOR_TAT and result == O_O :   # player and cozmo share
                 robot_game_action.act_out(robot, "win_hand")
+                
+            if robot_game_action.strategy == TIT_FOR_TAT and  result == P_O :   # player grab cozmo share
+                robot_game_action.act_out(robot, "lose_hand")
+            
             
             # Stop light cubes
             robot_cube.stop_light_chaser()

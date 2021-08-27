@@ -24,3 +24,5 @@ Practice: python tap_game.py --participantID=4 --strategy=P --colour=R --singleS
 
 Baseline: python tap_game.py --participantID=2 --strategy=B --colour=R --singleScreen
 
+Tit-for-tat: python tap_game.py --participantID=4 --strategy=T --colour=R --emotion=A --singleScreen
+
