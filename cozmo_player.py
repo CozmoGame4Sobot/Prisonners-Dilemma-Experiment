@@ -79,7 +79,7 @@ class CozmoPlayerActions(object):
             self.rounds_to_play = 11
             self.emotion = NEUTRAL 
         elif self.strategy == TIT_FOR_TAT: #we only have emotions for Tit-for-tat
-            self.rounds_to_play = 15
+            self.rounds_to_play = 16
             if emotion == 'S':
                 self.emotion = SAD
             elif emotion == 'A':
@@ -130,7 +130,7 @@ class CozmoPlayerActions(object):
         #    tap_decision = goal in [COZMO_DEFECT]
             
         if not self.practice:
-            tap_decision = goal in [P_R, O_R ]#randint(0, 10) in [0, 4, 8, 5, 10]
+            tap_decision = goal in [P_R, O_R ]
             
         else:
             tap_decision = goal in [P_R, O_R]
@@ -203,7 +203,6 @@ class CozmoPlayerActions(object):
             # There needs to be two moods for sad and angry
             selected_anim = self.select_lose_hand()
         elif act_type == "win_hand":
-            # TO DO : This needs to be as per Te-Yi's speck (ask her)
             #selected_anim = "anim_speedtap_winhand_0%s" % randint(1, 3)
             selected_anim = "anim_keepaway_wingame_02"	#happy animation
         elif act_type == "neutral":
@@ -445,15 +444,16 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                     cozmo.logger.info("PD : Updated cozmo plan")
                     log_deal_plan(cozmo_fixture)
             
-            # Reposition Cozmo
+            # Reposition Cozmo close to its cube
             if deal_count <= robot_game_action.rounds_to_play:
                 robot.move_lift(3)
                 if robot_game_action.practice or deal_count%5 == 0:
                     #robot.drive_wheels(-50, -50, duration=0.5)
                     robot.go_to_object(robot_cube, distance_mm(35.0)).wait_for_completed()
                 else:
-                    robot.drive_wheels(100, 100, duration=1.5)
-                    time.sleep(1.5)
+                    #robot.drive_wheels(100, 100, duration=1.5)
+                    #time.sleep(1.5)
+                    robot.go_to_object(robot_cube, distance_mm(35.0)).wait_for_completed()
                     
                 
                 cozmo.logger.info("PD : Ready for next deal")            
@@ -498,3 +498,34 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
     
     game_screen.master.destroy() 
          
+'''
+def go_to_cube(robot: cozmo.robot.Robot, cube):
+    #The core of the go to object test program
+
+    # Move lift down and tilt the head up
+    robot.move_lift(-3)
+    robot.set_head_angle(degrees(0)).wait_for_completed()
+
+    # look around and try to find a cube
+    look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
+
+    #cube = None
+
+    try:
+        cube = robot.world.wait_for_observed_light_cube(timeout=30)
+        print("Found cube: %s" % cube)
+    except asyncio.TimeoutError:
+        print("Didn't find a cube")
+    finally:
+        # whether we find it or not, we want to stop the behavior
+        look_around.stop()
+
+    if cube:
+        # Drive to 70mm away from the cube (much closer and Cozmo
+        # will likely hit the cube) and then stop.
+        action = robot.go_to_object(cube, distance_mm(70.0))
+        action.wait_for_completed()
+        print("Completed action: result = %s" % action)
+        print("Done.")
+
+'''

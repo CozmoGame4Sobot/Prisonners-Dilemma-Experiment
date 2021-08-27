@@ -12,12 +12,14 @@ from cozmo_player import CozmoPlayerActions, cozmo_tap_game
 from constants import SCORE_SETS, PRACTICE
 
 
-def add_file_logger(log_path, cozmo_action, practice):
+def add_file_logger(log_path, emotion, strategy):
     ''' setup file logger'''
-    if practice:
-        filename="Pract_%s.log" % datetime.now().strftime("%H%M%S_%d%m%Y")
-    else:
-        filename="Exp_%s.log" % datetime.now().strftime("%H%M%S_%d%m%Y")
+    #if practice:
+    #    filename="Pract_%s.log" % datetime.now().strftime("%H%M%S_%d%m%Y")
+    #else:
+    #    filename="Exp_%s.log" % datetime.now().strftime("%H%M%S_%d%m%Y")
+   
+    filename= strategy + "_" + emotion + "_" + "%s.log" % datetime.now().strftime("%H%M%S_%d%m%Y")
     filePath = os.path.join(log_path, filename)
     
     # create error file handler and set level to info
@@ -30,7 +32,7 @@ def add_file_logger(log_path, cozmo_action, practice):
     cozmo.logger.addHandler(handler)
     
 def handle_selection(cozmo_action):    
-    help_string = 'tap_game.py -h (--help) [-s (--sad), -a (--angry)] [-e (--easy), -d (--difficult) -t= (--timed=)] [-l (--logPath) -i(--ignoreLogging)]   < Note the log options must be the last option>'
+    help_string = 'tap_game.py -h (--help) [-s (--sad), -a (--angry)] [-l (--logPath) -i(--ignoreLogging)]   < Note the log options must be the last option>'
     log_path = None
     configParam = {"strategy" : None,
                    "participantID":None,
@@ -45,7 +47,7 @@ def handle_selection(cozmo_action):
                         help="Choose to play practice(P), tit-for-tat(T), random(R) or Baseline(B)")
     parser.add_argument("--colour", choices=['B', 'R'],    
                         help="Choose to play Blue(B) or Red(R)")
-    parser.add_argument("--emotion", choices=['A', 'S'],    
+    parser.add_argument("--emotion", choices=['A', 'S'], default="",   
                         help="Choose to play Angry(A) or Sad(S)")
     parser.add_argument("--singleScreen", type=bool, nargs='?', const=True, default=False,    
                         help="For checking game on single screen")
@@ -96,7 +98,7 @@ def handle_selection(cozmo_action):
        
         
     if configParam and log_path:
-        add_file_logger(log_path, cozmo_action, args.strategy==PRACTICE) 
+        add_file_logger(log_path, args.emotion, args.strategy) 
     return configParam       
     
          
