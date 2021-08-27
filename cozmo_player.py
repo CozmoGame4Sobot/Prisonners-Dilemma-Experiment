@@ -79,7 +79,7 @@ class CozmoPlayerActions(object):
             self.rounds_to_play = 11
             self.emotion = NEUTRAL 
         elif self.strategy == TIT_FOR_TAT: #we only have emotions for Tit-for-tat
-            self.rounds_to_play = 16
+            self.rounds_to_play = 15
             if emotion == 'S':
                 self.emotion = SAD
             elif emotion == 'A':
