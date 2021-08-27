@@ -353,7 +353,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                 # If player defected last time cozmo will defect
                 #print("%d  defect=%d" % (speed_tap_game.robot_next_move, COZMO_DEFECT))
                 #cozmo_goal = speed_tap_game.robot_next_move
-                if deal_count<=10:
+                if deal_count<=5:
                     cozmo_goal = cozmo_fixture[deal_count - 1]
                 else:
                     cozmo_goal = speed_tap_game.player_move
@@ -366,7 +366,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             
             # If player has tapped it would be registered by now      
             monitor_player_tap.listen = False
-            print("Player move : %s" % speed_tap_game.player_move)
+            #print("Player move : %s" % speed_tap_game.player_move)
             speed_tap_game.deactivate_current_deal() 
             cozmo.logger.info("PD : Hand deactivated : %s" % deal_count)
             speed_tap_game.score_last_deal(refresh = False)  # For not having a running total set refresh to True   

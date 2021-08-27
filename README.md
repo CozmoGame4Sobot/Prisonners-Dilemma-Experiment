@@ -18,3 +18,9 @@ To setup your device and computer to run custom python code, see instruction fro
 
 Note: To use later versions of the Cozmo app you might need to revisit the animations that have been updated.
 
+To run commands, exmamples:
+
+Practice: python tap_game.py --participantID=4 --strategy=P --colour=R --singleScreen
+
+Baseline: python tap_game.py --participantID=2 --strategy=B --colour=R --singleScreen
+
