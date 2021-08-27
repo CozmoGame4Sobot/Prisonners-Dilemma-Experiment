@@ -9,6 +9,7 @@ COZMO_CHOICE = [[1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0],
                 [0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1]]
 
 #GAME_STATES = ["get-ready", "decide", "calculate_scores", "display_scores"]
+COZMO_BASELINE=[1, 1, 0, 0, 1]
 
 PLAYER_ID = 1
 COZMO_ID = 2
@@ -16,6 +17,7 @@ COZMO_ID = 2
 PRACTICE = 'P'
 TIT_FOR_TAT = 'T'
 RANDOM = 'R'
+BASELINE = 'B'
 
 PLAYER_COOP = 1
 PLAYER_DEFECT = 2

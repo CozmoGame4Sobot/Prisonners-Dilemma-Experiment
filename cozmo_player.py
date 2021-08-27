@@ -20,10 +20,12 @@ from constants import ( PLAYER_ID,
                         COZMO_DEFECT,
                         COZMO_COOP,
                         COZMO_CHOICE,
+                        COZMO_BASELINE,
                         
                         PRACTICE,
                         TIT_FOR_TAT,
                         RANDOM,
+                        BASELINE,
                         
                         NEUTRAL,
                         SAD,
@@ -73,14 +75,18 @@ class CozmoPlayerActions(object):
             self.practice = True
             self.rounds_to_play = 11
             self.emotion = NEUTRAL
+        elif self.strategy == BASELINE:
+            self.rounds_to_play = 11
+            self.emotion = NEUTRAL 
+        elif self.strategy == TIT_FOR_TAT: #we only have emotions for Tit-for-tat
+            self.rounds_to_play = 16
+            if emotion == 'S':
+                self.emotion = SAD
+            elif emotion == 'A':
+                self.emotion = ANGRY
         else:
             self.rounds_to_play = 10
-            
-        if emotion == 'S':
-            self.emotion = SAD
-        elif emotion == 'A':
-            self.emotion = ANGRY
-            
+
         if colour == "R":
             self.tablet_code = RED_CODE
         else:
@@ -113,15 +119,21 @@ class CozmoPlayerActions(object):
         @param speed_tap_game: The game engine that needs to register the tap
         @param goal: If this is a practice round then cozmo taps if the goal requires it to tap 
         """
-        print("Goal %d  to grab:%s" %(goal, [P_R, O_R]))
-        if self.strategy == PRACTICE:
-            tap_decision = goal in [P_R, O_R ] #randint(0, 10) in [0, 4, 8, 5, 10]           
+        #print("Goal %d  to grab:%s" %(goal, [P_R, O_R]))
+        #if self.strategy == PRACTICE:
+        #    tap_decision = goal in [P_R, O_R ] #randint(0, 10) in [0, 4, 8, 5, 10]           
         #elif self.strategy == RANDOM:
         #    tap_decision = goal in [P_R, O_R]
         #elif self.strategy == TIT_FOR_TAT:
         #    tap_decision = goal in [1, 1, 1, 0, 0, 1]   
+        #else:
+        #    tap_decision = goal in [COZMO_DEFECT]
+            
+        if not self.practice:
+            tap_decision = goal in [P_R, O_R ]#randint(0, 10) in [0, 4, 8, 5, 10]
+            
         else:
-            tap_decision = goal in [COZMO_DEFECT]
+            tap_decision = goal in [P_R, O_R]
         time.sleep(1.5)
         game_robot.move_lift(-3)
         time.sleep(.1)
@@ -173,13 +185,10 @@ class CozmoPlayerActions(object):
         return reaction_anim 
     
     def select_lose_hand(self):
-        # TO DO : These animations have to be set to what Te-Yi wants
-        # ask her what it is
         if self.emotion == SAD:
             reaction_anim = "anim_memorymatch_failgame_cozmo_03" 
             cozmo.logger.info("PD : Cozmo sad lose game reacion")            
         elif self.emotion == ANGRY:
-            #lose_game_anim = "anim_guarddog_getout_busted_01" #Te-Yi's first choice
             reaction_anim = "anim_guarddog_getout_busted_01" #"anim_memorymatch_failgame_cozmo_02"
             cozmo.logger.info("PD : Cozmo angry lose game reacion") 
         else:
@@ -247,17 +256,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
     time.sleep(0.25)        # sleep to give the cozmo cube to stop flashing
     
     robot_cube, player_coop_cube, player_defect_cube = speed_tap_game.cozmo_setup_game(robot_game_action.score_plan)
-    #robot_cube, player_coop_cube, player_defect_cube = speed_tap_game.cozmo_setup_game([(4, 4), (10, 0), (0, 10), (6,6)])
-    #print(speed_tap_game.cozmo_setup_game(robot_game_action.score_plan))
-    
-        # do something with item
-    #except Exception as e:
-        # handle the exception accordingly
-    
-    #robot_cube =  speed_tap_game.robot_cube
-    #player_coop_cube = speed_tap_game.player_coop_cube
-    #player_defect_cube = speed_tap_game.player_defect_cube
-    
+  
     if robot_cube in [player_coop_cube, player_defect_cube]:
         print("Participant cannot play on the same cube as cozmo")
         game_screen.master.destroy() 
@@ -283,7 +282,8 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                     O_O]    
     
     # This is needed for RANDOM choices
-    cozmo_fixture =  COZMO_CHOICE[randint(0, 2)][:robot_game_action.rounds_to_play]
+    #cozmo_fixture =  COZMO_CHOICE[randint(0, 2)][:robot_game_action.rounds_to_play]
+    
     # Now all decided so lets suffle it up
     #shuffle(cozmo_fixture)
     
@@ -295,7 +295,13 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
     
     if robot_game_action.practice:
         cozmo.logger.info("PD : Playing practice round")
+        cozmo_fixture =  COZMO_CHOICE[randint(0, 2)][:robot_game_action.rounds_to_play]
+    elif robot_game_action.strategy == BASELINE:
+        cozmo_fixture =  COZMO_BASELINE
+        cozmo.logger.info("PD : Playing BASELINE round")
+        cozmo.logger.info("PD : Strategy = BASELINE")
     elif robot_game_action.strategy == TIT_FOR_TAT:
+        cozmo_fixture =  COZMO_BASELINE
         cozmo.logger.info("PD : Playing experiment round")
         cozmo.logger.info("PD : Strategy = TIT_FOR_TAT")
     else:
@@ -308,7 +314,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
         
     try:
         while deal_count < robot_game_action.rounds_to_play :
-            print("cozmo_fixture %s" % cozmo_fixture)
+            #("cozmo_fixture %s" % cozmo_fixture)
             cozmo.logger.info("PD : Deal started")
             if robot_game_action.practice:
                 if track_correct_practice%4 == 0:
@@ -335,22 +341,32 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             monitor_player_tap.listen = True
             if robot_game_action.strategy==PRACTICE:
                 cozmo_goal = correctChoice
+            elif robot_game_action.strategy == BASELINE:# and speed_tap_game.robot_next_move:
+                # If player defected last time cozmo will defect
+                #print("%d  defect=%d" % (speed_tap_game.robot_next_move, COZMO_DEFECT))
+                #cozmo_goal = speed_tap_game.robot_next_move
+                if deal_count<=5:
+                    cozmo_goal = cozmo_fixture[deal_count - 1]
+                else:
+                    cozmo_goal = speed_tap_game.player_move
             elif robot_game_action.strategy == TIT_FOR_TAT and speed_tap_game.robot_next_move:
                 # If player defected last time cozmo will defect
-                print("%d  defect=%d" % (speed_tap_game.robot_next_move, COZMO_DEFECT))
+                #print("%d  defect=%d" % (speed_tap_game.robot_next_move, COZMO_DEFECT))
                 #cozmo_goal = speed_tap_game.robot_next_move
-                cozmo_goal = speed_tap_game.robot_next_move
+                if deal_count<=10:
+                    cozmo_goal = cozmo_fixture[deal_count - 1]
+                else:
+                    cozmo_goal = speed_tap_game.player_move
             else:
                 cozmo_goal = cozmo_fixture[deal_count - 1]
             # Get Cozmo to decide whether it is going to tap
-            tapped = robot_game_action.cozmo_tap_decision(robot,
-                                                          speed_tap_game,
-                                                          cozmo_goal)
+            tapped = robot_game_action.cozmo_tap_decision(robot, speed_tap_game, cozmo_goal)
             
             
             
             # If player has tapped it would be registered by now      
             monitor_player_tap.listen = False
+            print("Player move : %s" % speed_tap_game.player_move)
             speed_tap_game.deactivate_current_deal() 
             cozmo.logger.info("PD : Hand deactivated : %s" % deal_count)
             speed_tap_game.score_last_deal(refresh = False)  # For not having a running total set refresh to True   
@@ -395,11 +411,11 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             
             # This is where the robot needs to act angry or sad or neutral depending on relative scores
             # speed_tap_game.player_score, speed_tap_game.robot_score,
-            if not robot_game_action.practice and speed_tap_game.robot_score < speed_tap_game.player_score:
+            if robot_game_action.strategy == TIT_FOR_TAT and speed_tap_game.robot_score < speed_tap_game.player_score:
                 robot_game_action.act_out(robot, "lose_hand")
               
             # condition to win_hand still to be checked with Te-Yi/Bish
-            if not robot_game_action.practice and speed_tap_game.robot_score > speed_tap_game.player_score:
+            if robot_game_action.strategy == TIT_FOR_TAT and speed_tap_game.robot_score > speed_tap_game.player_score:
                 robot_game_action.act_out(robot, "win_hand")
             
             # Stop light cubes

@@ -41,9 +41,8 @@ def handle_selection(cozmo_action):
                          help="Participant ID is required to record logs correctly")
     parser.add_argument("--ignoreLog", type=bool, nargs='?', const=True, default=False,
                         help="Provide this argument to indicate logs are to be ignores")
-    #parser.add_argument("--round", type=int, choices=[0, 1, 2, 3, 4])
-    parser.add_argument("--strategy", choices=['P', 'T', 'R'],    
-                        help="Choose to play practice(P), tit-for-tat(T) or random(R)")
+    parser.add_argument("--strategy", choices=['P', 'T', 'R', 'B'],    
+                        help="Choose to play practice(P), tit-for-tat(T), random(R) or Baseline(B)")
     parser.add_argument("--colour", choices=['B', 'R'],    
                         help="Choose to play Blue(B) or Red(R)")
     parser.add_argument("--emotion", choices=['A', 'S'],    
