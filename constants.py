@@ -33,8 +33,8 @@ ANGRY = 2
 These need to be set to the tablet being used for the experiment
 So that we are not switching during the experiment
 """
-BLUE_CODE = "HGADYZJF"
-RED_CODE = "CICQZHMRLVRCD6OZ" #"CICQZHMRLVRCD6OZ"
+BLUE_CODE = "HGADYZJF" #- this is Te-Yi tablet id, "HGADZKT6"- other tablet id
+RED_CODE = "CICQZHMRLVRCD6OZ"
 
 
 #Score conditions

@@ -313,7 +313,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
         
     try:
         while deal_count < robot_game_action.rounds_to_play :
-            #("cozmo_fixture %s" % cozmo_fixture)
+            #print("cozmo_fixture %s" % cozmo_fixture)
             cozmo.logger.info("PD : Deal started")
             if robot_game_action.practice:
                 if track_correct_practice%4 == 0:
@@ -348,7 +348,8 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                     cozmo_goal = cozmo_fixture[deal_count - 1]
                 else:
                     cozmo_goal = speed_tap_game.player_move
-            elif robot_game_action.strategy == TIT_FOR_TAT and speed_tap_game.robot_next_move:
+                    cozmo_fixture.append(cozmo_goal)
+            elif robot_game_action.strategy == TIT_FOR_TAT:# and speed_tap_game.robot_next_move:
                 # If player defected last time cozmo will defect
                 #print("%d  defect=%d" % (speed_tap_game.robot_next_move, COZMO_DEFECT))
                 #cozmo_goal = speed_tap_game.robot_next_move
@@ -356,6 +357,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                     cozmo_goal = cozmo_fixture[deal_count - 1]
                 else:
                     cozmo_goal = speed_tap_game.player_move
+                    cozmo_fixture.append(cozmo_goal)
             else:
                 cozmo_goal = cozmo_fixture[deal_count - 1]
             # Get Cozmo to decide whether it is going to tap
@@ -429,10 +431,12 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             if robot_game_action.practice and track_correct_practice >= pass_criteria:
                 cozmo.logger.info("PD : Practice Passed") 
                 print("PRACTICE PASSED")
+                game_screen.show_goal_statement("PRACTICE PASSED")
+                time.sleep(2)
                 break
-            elif not robot_game_action.practice and result == X_X :
-                if robot_game_action.rounds_to_play >= 35:
-                    cozmo.logger.info("PD : Over 15 rounds of missing data. We will stop.")
+            elif not robot_game_action.practice and result == X_X : #X_X is when player missed to tap the cube
+                if robot_game_action.rounds_to_play >= 25:
+                    cozmo.logger.info("PD : Over 10-15 rounds of missing data. We will stop.")
                     break;
                 else:
                     cozmo.logger.info("PD : Rounds incremented to compensate for missing data")
@@ -447,14 +451,16 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             # Reposition Cozmo close to its cube
             if deal_count <= robot_game_action.rounds_to_play:
                 robot.move_lift(3)
+                robot.go_to_object(robot_cube, distance_mm(35.0)).wait_for_completed()
+                '''
                 if robot_game_action.practice or deal_count%5 == 0:
                     #robot.drive_wheels(-50, -50, duration=0.5)
                     robot.go_to_object(robot_cube, distance_mm(35.0)).wait_for_completed()
                 else:
-                    #robot.drive_wheels(100, 100, duration=1.5)
-                    #time.sleep(1.5)
-                    robot.go_to_object(robot_cube, distance_mm(35.0)).wait_for_completed()
-                    
+                    robot.drive_wheels(100, 100, duration=1.5)
+                    time.sleep(1.5)
+                    #robot.go_to_object(robot_cube, distance_mm(35.0)).wait_for_completed()
+                 '''  
                 
                 cozmo.logger.info("PD : Ready for next deal")            
             
@@ -478,7 +484,15 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
         
         if robot_game_action.practice and deal_count >= robot_game_action.rounds_to_play:
             cozmo.logger.info("PD : Practice Failed") 
+            game_screen.show_goal_statement("")
             print("PRACTICE FAILED")
+            game_screen.show_goal_statement("PRACTICE FAILED")
+            time.sleep(2)
+        elif not robot_game_action.practice and deal_count >= robot_game_action.rounds_to_play:
+            cozmo.logger.info("PD : Game Finished") 
+            print("Game Finished")
+            game_screen.show_goal_statement("Game Finished")
+            time.sleep(2)
         
     finally:
          monitor_player_tap.game_on = False
@@ -497,35 +511,3 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
 
     
     game_screen.master.destroy() 
-         
-'''
-def go_to_cube(robot: cozmo.robot.Robot, cube):
-    #The core of the go to object test program
-
-    # Move lift down and tilt the head up
-    robot.move_lift(-3)
-    robot.set_head_angle(degrees(0)).wait_for_completed()
-
-    # look around and try to find a cube
-    look_around = robot.start_behavior(cozmo.behavior.BehaviorTypes.LookAroundInPlace)
-
-    #cube = None
-
-    try:
-        cube = robot.world.wait_for_observed_light_cube(timeout=30)
-        print("Found cube: %s" % cube)
-    except asyncio.TimeoutError:
-        print("Didn't find a cube")
-    finally:
-        # whether we find it or not, we want to stop the behavior
-        look_around.stop()
-
-    if cube:
-        # Drive to 70mm away from the cube (much closer and Cozmo
-        # will likely hit the cube) and then stop.
-        action = robot.go_to_object(cube, distance_mm(70.0))
-        action.wait_for_completed()
-        print("Completed action: result = %s" % action)
-        print("Done.")
-
-'''
