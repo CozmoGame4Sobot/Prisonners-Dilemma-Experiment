@@ -448,6 +448,8 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                     cozmo_fixture[deal_count - 2] = -1 
                     cozmo.logger.info("PD : Updated cozmo plan")
                     log_deal_plan(cozmo_fixture)
+                    if deal_count>5:
+                       cozmo_fixture.append(cozmo_goal)
             
             # Reposition Cozmo close to its cube
             if deal_count <= robot_game_action.rounds_to_play:
