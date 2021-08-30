@@ -444,6 +444,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                     # We missed a even paced tap/no tap decision by cozmo so append it 
                     # at the end to maintain balance
                     cozmo_fixture.append(cozmo_goal)
+                    cozmo_fixture[deal_count - 1] = cozmo_goal
                     cozmo_fixture[deal_count - 2] = -1 
                     cozmo.logger.info("PD : Updated cozmo plan")
                     log_deal_plan(cozmo_fixture)
