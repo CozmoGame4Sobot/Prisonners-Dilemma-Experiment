@@ -444,12 +444,13 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                     # We missed a even paced tap/no tap decision by cozmo so append it 
                     # at the end to maintain balance
                     #cozmo_fixture.append(cozmo_goal)
-                    cozmo_fixture[deal_count - 1] = cozmo_goal
+                    #cozmo_fixture[deal_count - 1] = cozmo_goal
+                    cozmo_fixture.insert(deal_count-1, cozmo_goal)
                     cozmo_fixture[deal_count - 2] = -1 
                     cozmo.logger.info("PD : Updated cozmo plan")
                     log_deal_plan(cozmo_fixture)
-                    if deal_count>5:
-                       cozmo_fixture.append(cozmo_goal)
+                    #if deal_count>5:
+                       
             
             # Reposition Cozmo close to its cube
             if deal_count <= robot_game_action.rounds_to_play:
