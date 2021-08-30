@@ -431,6 +431,7 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
             if robot_game_action.practice and track_correct_practice >= pass_criteria:
                 cozmo.logger.info("PD : Practice Passed") 
                 print("PRACTICE PASSED")
+                game_screen.show_goal_statement("")
                 game_screen.show_goal_statement("PRACTICE PASSED")
                 time.sleep(2)
                 break
@@ -439,17 +440,18 @@ def cozmo_tap_game(robot: cozmo.robot.Robot):
                     cozmo.logger.info("PD : Over 10-15 rounds of missing data. We will stop.")
                     break;
                 else:
-                    cozmo.logger.info("PD : Rounds incremented to compensate for missing data")
-                    robot_game_action.rounds_to_play += 1
+                    cozmo.logger.info("PD : Round is ignored to compensate for missing data-player missed to tap")
+                    #robot_game_action.rounds_to_play += 1
                     # We missed a even paced tap/no tap decision by cozmo so append it 
                     # at the end to maintain balance
                     #cozmo_fixture.append(cozmo_goal)
                     #cozmo_fixture[deal_count - 1] = cozmo_goal
-                    cozmo_fixture.insert(deal_count-1, cozmo_goal)
-                    cozmo_fixture[deal_count - 2] = -1 
+                    #cozmo_fixture.insert(deal_count-1, -1)
+                    #cozmo_fixture.insert(deal_count-2, -1)
+                    #cozmo_fixture[deal_count - 2] = -1 
+                    deal_count = deal_count -1
                     cozmo.logger.info("PD : Updated cozmo plan")
                     log_deal_plan(cozmo_fixture)
-                    #if deal_count>5:
                        
             
             # Reposition Cozmo close to its cube
